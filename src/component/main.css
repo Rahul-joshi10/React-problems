@@ -1,0 +1,7 @@
+.tableRow{
+    background: white;
+}
+.tableRow:hover{
+    background: lightgrey;
+    cursor: pointer
+}
