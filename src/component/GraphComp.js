@@ -8,6 +8,7 @@ function GraphComp() {
     const [nodes, setNodes] = useState([]);
     const [links, setLinks] = useState([]);
     const [nodeClicked, setNodeClicked] = useState([]);
+    const [nodeTargets, setNodeTargets] = useState([]);
 
     useEffect(() => {
         let tempNodes = [];
@@ -45,6 +46,33 @@ function GraphComp() {
         }
     }
 
+    useEffect(() => {
+        let linkArr = [];
+        let allArr = [];
+
+        nodeClicked.forEach(node => {
+            links.forEach(link => {
+                if (node === link.source.id) {
+                    linkArr.push(link.target.id)
+                }
+            })
+            if (linkArr.length > 0) {
+                allArr.push(linkArr);
+            }
+            linkArr = []
+        })
+
+        if (allArr.length > 0) {
+            let results = allArr.reduce((prev, curr) => prev.filter(e => curr.includes(e)))
+            setNodeTargets(results)
+        }
+
+        if (allArr.length === 0) {
+            setNodeTargets([])
+        }
+
+    }, [nodeClicked]);
+
     return (
         <div>
             <ForceGraph2D
@@ -56,9 +84,12 @@ function GraphComp() {
                 }
                 nodeRelSize={6}
                 linkColor={(data) => {
-                    if (nodeClicked.indexOf(data.source.id) !== -1) {
+                    if (nodeTargets.indexOf(data.target.id) !== -1) {
                         return 'red'
+                    } else {
+                        return 'black'
                     }
+
                 }}
                 onNodeClick={onNodeClick}
                 nodeCanvasObjectMode={() => 'after'}
@@ -71,7 +102,6 @@ function GraphComp() {
                     ctx.fillStyle = 'black'; //node.color;
                     ctx.fillText(label, node.x, node.y + 6);
                 }}
-                nodeVisibility={true}
             />
         </div>
     )
