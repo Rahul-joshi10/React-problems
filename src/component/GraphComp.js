@@ -7,7 +7,7 @@ import grapData from '../graphData.json';
 function GraphComp() {
     const [nodes, setNodes] = useState([]);
     const [links, setLinks] = useState([]);
-    const [nodeClicked, setNodeClicked] = useState({});
+    const [nodeClicked, setNodeClicked] = useState([]);
 
     useEffect(() => {
         let tempNodes = [];
@@ -31,13 +31,20 @@ function GraphComp() {
         setNodes(nodeData)
         setLinks(tempLinks)
 
-    }, [grapData])
+    }, [])
 
     const onNodeClick = (node) => {
-        setNodeClicked(prevNode => {
-            return prevNode !== node ? node : {}
-        })
+        let nodeArr = [];
+        if (nodeClicked.indexOf(node.id) === -1) {
+            setNodeClicked([...nodeClicked, node.id]);
+        } else {
+            nodeArr = [...nodeClicked]
+            let nodeIndex = nodeArr.indexOf(node.id);
+            nodeArr.splice(nodeIndex, 1);
+            setNodeClicked(nodeArr);
+        }
     }
+
     return (
         <div>
             <ForceGraph2D
@@ -49,10 +56,8 @@ function GraphComp() {
                 }
                 nodeRelSize={6}
                 linkColor={(data) => {
-                    if (nodeClicked.id === data.source.id) {
+                    if (nodeClicked.indexOf(data.source.id) !== -1) {
                         return 'red'
-                    } else {
-                        return 'black'
                     }
                 }}
                 onNodeClick={onNodeClick}
