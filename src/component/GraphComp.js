@@ -3,7 +3,6 @@ import ForceGraph2D from 'react-force-graph-2d';
 import grapData from '../graphData.json';
 
 
-
 function GraphComp() {
     const [nodes, setNodes] = useState([]);
     const [links, setLinks] = useState([]);
@@ -35,15 +34,18 @@ function GraphComp() {
     }, [])
 
     const onNodeClick = (node) => {
-        let nodeArr = [];
-        if (nodeClicked.indexOf(node.id) === -1) {
-            setNodeClicked([...nodeClicked, node.id]);
-        } else {
-            nodeArr = [...nodeClicked]
-            let nodeIndex = nodeArr.indexOf(node.id);
-            nodeArr.splice(nodeIndex, 1);
-            setNodeClicked(nodeArr);
+        if (!node.cin) {
+            let nodeArr = [];
+            if (nodeClicked.indexOf(node.id) === -1) {
+                setNodeClicked([...nodeClicked, node.id]);
+            } else {
+                nodeArr = [...nodeClicked]
+                let nodeIndex = nodeArr.indexOf(node.id);
+                nodeArr.splice(nodeIndex, 1);
+                setNodeClicked(nodeArr);
+            }
         }
+
     }
 
     useEffect(() => {
@@ -83,9 +85,15 @@ function GraphComp() {
                     }
                 }
                 nodeRelSize={6}
+                nodeColor={(node) => {
+                    if (nodeTargets.indexOf(node.id) !== -1 || nodeClicked.indexOf(node.id) !== -1) {
+                        return 'green'
+                    }
+                }}
+
                 linkColor={(data) => {
                     if (nodeTargets.indexOf(data.target.id) !== -1) {
-                        return 'red'
+                        return 'green'
                     } else {
                         return 'black'
                     }
@@ -100,7 +108,7 @@ function GraphComp() {
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
                     ctx.fillStyle = 'black'; //node.color;
-                    ctx.fillText(label, node.x, node.y + 6);
+                    ctx.fillText(label, node.x, node.y + 6); //Label and it's position
                 }}
             />
         </div>
